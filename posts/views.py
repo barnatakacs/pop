@@ -101,6 +101,12 @@ class ExplorePageView(LoginRequiredMixin, ListView):
         filtered_posts = [
             post for post in last_1000_posts_list if post.like_count >= average_like_count]
 
+        search_query = self.request.GET.get('explore', '').strip()
+
+        if search_query:
+            filtered_posts = [
+                post for post in filtered_posts if search_query.lower() in post.content.lower() or search_query.lower() in post.author.username.lower()]
+
         return filtered_posts
 
 

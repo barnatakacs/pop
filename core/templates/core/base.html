@@ -13,37 +13,33 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
 </head>
 <body class="bg-gray-100">
-    <nav class="py-6 px-52 flex justify-between items-center h-14 shadow-lg z-10 z-50 fixed top-0 w-full bg-white">
-        <div class="relative">
+    <nav class="py-6 px-52 flex justify-between items-center h-14 shadow-lg z-10 z-40 fixed top-0 w-full bg-white">
+        <div class="relative flex items-center space-x-4">
             <a href="/">
-                <div class="flex items-center space-x-3">
-                    <img class="h-8" src="{% static "logo.png" %}">
-                    <h1 class="text-2xl font-bold">POP</h1>
+                <div class="flex items-center space-x-1">
+                    <img class="h-9" src="{% static "logo.png" %}">
+                    <h1 class="text-3xl font-bold">POP</h1>
                 </div>
             </a>
+            <ul>
+                <li class="px-2 bg-gray-200 rounded-full text-md font-normal text-gray-500 {% if request.path == '/' %}active {% else %} hidden {% endif %}">HOME</li>
+                <li class="px-2 bg-gray-200 rounded-full text-md font-normal text-gray-500 {% if request.path == '/posts/explore/' %}active {% else %} hidden {% endif %}">EXPLORE</li>
+            </ul>
         </div>
 
-        {% if request.user.is_authenticated %}
-        <div class="absolute left-1/2 transform -translate-x-1/2">
-            <form method="GET" action="">
-                <div class="flex">
-                    <input name="" value="" placeholder="Search..." type="text" class="px-3 py-1 w-96 text-lg bg-white rounded-full border-2 border-gray-300 placeholder-gray-300 focus:outline-none">
-                </div>
-            </form>
-        </div>
-        {% endif %}
+        {% comment %} search {% endcomment %}
 
         <div class="flex space-x-3">
         {% if request.user.is_authenticated %}
         <div class="flex items-center">
-            <a href="{% url "users:profile" user.username %}" class="mr-6 flex items-center px-0 py-0">
+            <a href="{% url "users:profile" user.username %}" class="mr-3 flex items-center px-0 py-0">
                 <p class="text-lg mr-3 hover:text-yellow-400">{{ user.username }}</p>
                 {% if user.user_profile and user.user_profile.profile_picture %}
-                    <div class="w-10 h-10 rounded-full overflow-hidden mr-2 border-2 border-gray-300">
+                    <div class="w-10 h-10 rounded-full overflow-hidden border-2 border-gray-300">
                         <img class="w-full h-full object-cover object-center aspect-square" src="{{ user.user_profile.profile_picture.url }}">
                     </div>
                 {% else %}
-                    <div class="w-10 h-10 rounded-full overflow-hidden mr-2 border-2 border-gray-300">
+                    <div class="w-10 h-10 rounded-full overflow-hidden border-2 border-gray-300">
                         <img class="w-full h-full object-cover object-center aspect-square" src="{% static "user2.png" %}">
                     </div>
                 {% endif %}
