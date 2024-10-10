@@ -1,0 +1,9 @@
+{% extends "core/base.html" %}
+
+{% block title %}Post by {{ post.author }}{% endblock title %}
+
+{% block content %}
+<div>
+    {% include "core/post.html" with post=post redirection='detail' %}
+</div>
+{% endblock content %}

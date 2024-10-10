@@ -1,0 +1,57 @@
+{% extends "core/base.html" %}
+
+{% block title %}Edit Profile{% endblock title %}
+
+{% block content %}
+    <div class="rounded-lg bg-white px-6 py-3 shadow-lg">
+        <h2 class="mb-6 text-xl font-semibold">Edit Profile</h2>
+
+        <form method="post" action="" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                {{ form.bio }}
+            </div>
+    
+            <div class="mb-3">
+                <div class="flex items-center justify-between w-full py-3">
+                    <div>
+                        <label class="cursor-pointer block">
+                            <span class="text-md text-gray-400 bg-white px-6 py-2 border-2 rounded-lg hover:bg-gray-200">
+                                Choose Image
+                            </span>
+                            <!-- Ensure the input is visible but styled to be hidden -->
+                            <input type="file" name="profile_picture" class="hidden" onchange="updateFileName(this)">
+                        </label>
+                    </div>
+                    <span id="file-chosen" class="text-sm text-gray-500 ml-2">No file chosen</span>
+                </div>
+            </div>
+
+            <script>
+                function updateFileName(input) {
+                    const fileChosen = document.getElementById('file-chosen');
+                    if (input.files.length > 0) {
+                        fileChosen.textContent = input.files[0].name;
+                    } else {
+                        fileChosen.textContent = 'No file chosen';
+                    }
+                }
+            </script>
+    
+            {% if form.errors or form.non_field_errors %}
+                <div class="mb-3 p-6 bg-red-100 rounded-xl">
+                    {% for field in form %}
+                        {{ field.errors }}
+                    {% endfor %}
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+                
+            <div class="flex space-x-3">
+                <a class="w-full mt-3 mb-3 px-4 py-1 text-lg bg-gray-300 hover:bg-gray-400 shadow-lg rounded-lg text-white font-semibold text-center" href="{% url 'users:profile' profile.user.username %}">Cancel</a>
+                <button class="w-full mt-3 mb-3 px-4 py-1 text-lg bg-yellow-400 hover:bg-yellow-500 shadow-lg rounded-lg text-white font-semibold">Done</button>
+            </div>
+        </form>
+    </div>
+{% endblock content %}

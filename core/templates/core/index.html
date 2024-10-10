@@ -1,0 +1,22 @@
+{% extends "core/base.html" %}
+
+{% load static %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+    {% if posts %}
+    {% for post in posts %}
+        {% include "core/post.html" with post=post redirection='index' %}
+    {% endfor %}
+    {% else %}
+    <div class="px-6 py-4 shadow-lg rounded-lg bg-white">
+        <h1 class="pb-4 text-2xl font-bold mb-6 border-b-2 border-gray-200">There are no posts for you to see yet</h1>
+        <div class="text-lg space-y-6">
+            <p>Follow users to see their posts</p>
+            <p>Look up our <a class="font-semibold hover:text-yellow-400" href="#">Explore</a> page to see the hottest posts on our site</p>
+            <p>Search for posts you'd like to see</p>
+        </div>
+    </div>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends "core/base.html" %}
+
+{% block title %}New Post{% endblock title %}
+
+{% block content %}
+    <div class="rounded-lg bg-white px-6 py-3 shadow-lg">
+        <h2 class="mb-6 text-xl font-semibold">New Post</h2>
+
+        <form method="post" action="" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                {{ form.content }}
+            </div>
+    
+            <div class="mb-3">
+                <div class="flex items-center justify-between w-full py-3">
+                    <div>
+                        <label class="cursor-pointer block">
+                            <span class="text-md text-gray-400 bg-white px-6 py-2 border-2 rounded-lg hover:bg-gray-200">
+                                Choose Image
+                            </span>
+                            {{ form.image }}
+                        </label>
+                    </div>
+                    <span id="file-chosen" class="text-sm text-gray-500 ml-2">No file chosen</span>
+                </div>
+            </div>
+
+            <script>
+                const fileInput = document.querySelector('input[type="file"]');
+                const fileChosen = document.getElementById('file-chosen');
+            
+                fileInput.addEventListener('change', function() {
+                    if (fileInput.files.length > 0) {
+                        fileChosen.textContent = fileInput.files[0].name;
+                    } else {
+                        fileChosen.textContent = 'No file chosen';
+                    }
+                });
+            </script>
+    
+            {% if form.errors or form.non_field_errors %}
+                <div class="mb-3 p-6 bg-red-100 rounded-xl">
+                    {% for field in form %}
+                        {{ field.errors }}
+                    {% endfor %}
+    
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+            
+            <div class="flex space-x-3">
+                <a class="w-full mt-3 mb-3 px-4 py-1 text-lg bg-gray-300 hover:bg-gray-400 shadow-lg rounded-lg text-white font-semibold text-center" href="{% url "core:index" %}">Cancel</a>
+                <button class="w-full mt-3 mb-3 px-4 py-1 text-lg bg-yellow-400 hover:bg-yellow-500 shadow-lg rounded-lg text-white font-semibold">Post</button>
+            </div>
+        </form>
+    </div>
+{% endblock content %}

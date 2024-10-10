@@ -1,0 +1,221 @@
+{% load static %}
+
+<div class="px-3 py-2 shadow-lg rounded-lg mb-6 bg-white">
+    <div class="flex items-center w-full justify-between">   
+        <div class="mt-1">
+            <a href="{% url "users:profile" post.author.username %}" class="flex items-center ">
+            {% if post.author.user_profile.profile_picture %}
+            <div class="w-8 h-8 rounded-full overflow-hidden mr-2 border-2 border-gray-300">
+                <img class="w-full h-full object-cover object-center aspect-square" src="{{ post.author.user_profile.profile_picture.url }}">
+            </div>
+            {% else %}
+            <div class="w-8 h-8 rounded-full overflow-hidden mr-2 border-2 border-gray-300">
+                <img class="w-full h-full object-cover object-center aspect-square" src="{% static "user2.png" %}">
+            </div>
+            {% endif %}
+            <h2 class="text-lg">{{ post.author }}</h2>
+            </a>
+        </div>
+
+        <p class="text-sm text-gray-500">{{ post.created_at|date:"Y-m-d, H:i" }}</p>
+    </div>
+
+    <img class="h-96 w-full aspect-square object-cover my-3 rounded-lg border-2" src="{{ post.image.url }}">
+
+    <div class="flex items-center mb-1">
+        <form method="post" action="{% url 'posts:like' post.id redirection|default:"index" %}" class="inline-flex">
+            {% csrf_token %}
+            <button type="submit" class="like-button">
+                {% if post.user_liked or user_liked %}
+                    <img class="h-7 mr-1" src="{% static "heart-full.png" %}">
+                {% else %}
+                    <img class="h-7 mr-1" src="{% static "heart.png" %}">
+                {% endif %}
+            </button>
+        </form>
+
+        <button class="text-xl mr-2" id="showLikedUsers-{{ post.id }}">{{ post.likes.count }}</button>
+        
+        <div class="flex items-center">
+            <button id="showCommentModal-{{ post.id }}" class="flex items-center comment-button">
+                <img class="h-5 mr-1" src="{% static "chat3.png" %}">
+                <p class="text-xl">{{ post.comment.count }}</p>
+            </button>
+        </div>
+    </div>
+
+    <div id="likedUsersModal-{{ post.id }}" class="fixed inset-0 bg-black bg-opacity-70 hidden flex justify-center items-center z-50">
+        <div class="bg-white rounded-lg p-5 w-80 max-h-80 shadow-lg overflow-hidden">
+            <div class="flex justify-between mb-3">
+                <h2 class="text-2xl font-semibold">{% if post.likes.count == 1 %}1 like{% else %}{{ post.likes.count }} likes{% endif %}</h2>
+                <span id="closeModal-{{ post.id }}" class="cursor-pointer text-2xl">&times;</span>
+            </div>
+
+            <div class="liked-users-list overflow-y-auto max-h-80">
+                {% for like in post.likes.all %}
+                    <a href="{% url "users:profile" like.user.username %}" class="flex items-center space-x-3 mb-3 last:mb-0">
+                        {% if like.user.user_profile.profile_picture %}
+                            <img class="border-2 border-gray-300 h-9 rounded-full h-full object-cover object-center aspect-square" src="{{ like.user.user_profile.profile_picture.url }}">
+                        {% else %}
+                            <img class="border-2 border-gray-300 h-9 rounded-full" src="{% static "user2.png" %}">    
+                        {% endif %}
+                        <p class="text-lg">{{ like.user.username }}</p>
+                    </a>
+                {% empty %}
+                    <div class="py-2">No users liked this post yet.</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>  
+    
+    <div id="commentModal-{{ post.id }}" class="fixed inset-0 w-full h-full bg-black bg-opacity-70 flex justify-center items-center hidden z-50 overflow-hidden">
+        <div class="bg-white rounded-lg p-5 w-2/5 max-h-2/3 overflow-auto shadow-lg">
+            <div class="flex justify-between mb-3">
+                <h2 class="text-2xl font-semibold">
+                    {% if post.comment.count == 1 %}1 comment{% else %}{{ post.comment.count }} comments{% endif %}
+                </h2>
+                <span id="closeModal-{{ post.id }}" class="cursor-pointer text-2xl">&times;</span>
+            </div>
+
+            <div class="comments-list overflow-y-auto max-h-48">
+                {% for comment in post.comment.all %}
+                    <div class="p-2 border-2 border-gray-300 rounded-lg mb-3">
+                        <div class="flex items-center space-x-3">
+                            {% if comment.author.user_profile.profile_picture %}
+                                <img src="{{ comment.author.user_profile.profile_picture.url }}" class="border-2 border-gray-300 h-9 rounded-full h-full object-cover object-center aspect-square">
+                            {% else %}
+                                <img class="border-2 border-gray-300 h-9 rounded-full" src="{% static "user2.png" %}"> 
+                            {% endif %}
+                            <div class="flex justify-between items-center w-full">
+                                <p class="font-semibold">{{ comment.author.username }}</p>
+                                <div class="flex items-center">
+                                    <p class="text-sm text-gray-500 mr-2">{{ comment.created_at|date:"Y-m-d, H:i" }}</p>
+                                    <a href="{% url "posts:delete_comment" post.id comment.id redirection|default:"index" %}" class="{% if not comment.author == request.user %}hidden{% endif %} rounded-lg bg-red-500 hover:bg-red-700 text-sm text-white px-2 py-1">Delete</a>
+                                </div>
+                            </div>
+                        </div>
+                        <h2 class="ml-12">{{ comment.content }}</h2>
+                    </div>
+                {% empty %}
+                    <div class="py-2">No comments yet.</div>
+                {% endfor %}
+            </div>
+
+            <form method="post" class="mt-3">
+                {% csrf_token %}
+                <div class="flex items-center">
+                    {{ comment_form.content }}
+                    {% if form.errors or form.non_field_errors %}
+                    <div class="mb-3 p-6 bg-red-100 rounded-xl">
+                        {% for field in form %}
+                            {{ field.errors }}
+                        {% endfor %}
+
+                        {{ form.non_field_errors }}
+                    </div>
+                    {% endif %}
+                    <input type="hidden" name="post_id" value="{{ post.id }}">
+                    <button type="submit" class="h-11 bg-yellow-400 hover:bg-yellow-500 text-lg text-white rounded-r-xl p-2 font-bold">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="flex">
+        <a class="mr-1" href="{% url "users:profile" post.author.username %}">
+            <p class="text-lg font-semibold">{{ post.author }}</p>
+        </a>
+        <p class="text-lg">{{ post.content }}</p>
+    </div>
+</div>
+
+<script>
+
+// LIKE
+
+// Save scroll position when liking a post
+document.querySelectorAll('.like-button').forEach(button => {
+    button.addEventListener('click', () => {
+        sessionStorage.setItem('scrollPosition', window.scrollY);
+    });
+});
+
+// Restore scroll position after reloading the page
+window.addEventListener('load', () => {
+    const scrollPosition = sessionStorage.getItem('scrollPosition');
+    if (scrollPosition) {
+        window.scrollTo(0, parseInt(scrollPosition, 10));
+        sessionStorage.removeItem('scrollPosition');
+    }
+});
+
+// Like modal functionality
+document.querySelectorAll('[id^="showLikedUsers-"]').forEach(button => {
+    button.addEventListener('click', function(event) {
+        event.preventDefault();
+        const postId = this.id.split('-')[1];
+        const modal = document.getElementById(`likedUsersModal-${postId}`);
+        modal.classList.remove('hidden');
+        // Keep background scrolling enabled
+    });
+});
+
+// Close like modal
+document.querySelectorAll('[id^="closeModal-"]').forEach(closeButton => {
+    closeButton.addEventListener('click', function() {
+        const postId = this.id.split('-')[1];
+        const modal = document.getElementById(`likedUsersModal-${postId}`);
+        modal.classList.add('hidden');
+    });
+});
+
+// Close like modal with outside click
+window.addEventListener('click', function(event) {
+    const modals = document.querySelectorAll('[id^="likedUsersModal-"]');
+    modals.forEach(modal => {
+        if (event.target === modal) {
+            modal.classList.add('hidden');
+        }
+    });
+});
+
+// COMMENT
+
+// Save scroll position when commenting
+document.querySelectorAll('.comment-button').forEach(button => {
+    button.addEventListener('click', () => {
+        sessionStorage.setItem('scrollPosition', window.scrollY);
+    });
+});
+
+// Open comment modal
+document.querySelectorAll('[id^="showCommentModal-"]').forEach(button => {
+    button.addEventListener('click', function() {
+        const postId = this.id.split('-')[1];
+        const modal = document.getElementById(`commentModal-${postId}`);
+        modal.classList.remove('hidden');
+        // Keep background scrolling enabled
+    });
+});
+
+// Close comment modal
+document.querySelectorAll('[id^="closeModal-"]').forEach(closeButton => {
+    closeButton.addEventListener('click', function() {
+        const postId = this.id.split('-')[1];
+        const modal = document.getElementById(`commentModal-${postId}`);
+        modal.classList.add('hidden');
+    });
+});
+
+// Close comment modal with outside click
+window.addEventListener('click', function(event) {
+    const modals = document.querySelectorAll('[id^="commentModal-"]');
+    modals.forEach(modal => {
+        if (event.target === modal) {
+            modal.classList.add('hidden');
+        }
+    });
+});
+
+
+</script>

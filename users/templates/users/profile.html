@@ -1,0 +1,64 @@
+{% extends "core/base.html" %}
+
+{% load static %}
+
+{% block title %}Profile{% endblock title %}
+
+{% block content %}
+    <div class="px-6 py-6 mb-6 flex justify-center rounded-lg shadow-lg bg-white">
+        <div class="flex flex-col items-center">
+            {% if profile.profile_picture %}
+                <div class="w-96 h-96 mb-4 rounded-full overflow-hidden border-4 border-gray-200">
+                    <img class="w-full h-full object-cover object-center aspect-square" src="{{ profile.profile_picture.url }}">
+                </div>
+            {% else %}
+                <div class="w-96 h-96 mb-4 rounded-full overflow-hidden border-4 border-gray-200">
+                    <img class="w-full h-full object-cover object-center aspect-square" src="{% static "user2.png" %}">
+                </div>
+            {% endif %}
+            <h2 class="mb-4 text-lg">
+                {{ profile.user.username }}
+            </h2>
+            <div class="flex space-x-3">
+                <a href="{% url "users:follow_stat" profile.user.username 'followers' %}" class="px-4 py-1 bg-gray-200 rounded-full hover:bg-gray-300">Followers ({{ profile.user.followers.count }})</a>
+                <a href="{% url "users:follow_stat" profile.user.username 'following' %}" class="px-4 py-1 bg-gray-200 rounded-full hover:bg-gray-300">Following ({{ profile.user.following.count }})</a>
+                {% if not request.user == profile.user %}
+                <form method="post" action="{% url 'users:follow' profile.user.username %}">
+                    {% csrf_token %}
+                    {% if is_following %}
+                        <button type="submit" class="flex px-4 py-1 rounded-full bg-yellow-400 hover:bg-yellow-500 flex items-center space-x-2">
+                            <p class="text-white font-semibold">Following</p>
+                            <img class="h-4" src="{% static "tick.png" %}">
+                        </button>
+                    {% else %}
+                        <button type="submit" class="px-4 py-1 rounded-full bg-yellow-400 hover:bg-yellow-500">
+                            <p class="text-white font-semibold">Follow</p>
+                        </button>
+                    {% endif %}
+                </form>
+                {% else %}
+                <a href="{% url "users:edit" %}" class="px-4 py-1 bg-yellow-400 rounded-full bg-yellow-400 hover:bg-yellow-500">
+                    <p class="text-white font-semibold">Edit Profile</p>
+                </a>
+                {% endif %}
+            </div>    
+        </div>
+    </div>
+
+    {% if profile.bio %}
+    <div class="px-6 py-6 mb-6 rounded-lg shadow-lg bg-white">
+        <h2 class="text-gray-400">Bio</h2>
+        <p>{{ profile.bio }}</p>
+    </div>
+    {% endif %}
+
+    {% if posts %}
+    {% for post in posts %}
+        {% include "core/post.html" with post=post %}
+    {% endfor %}
+    {% else %}
+        <div class="px-6 py-6 mb-6 rounded-lg shadow-lg bg-white">
+            <h2>No posts yet</h2>
+        </div>
+    {% endif %}
+{% endblock content %}
