@@ -48,7 +48,6 @@ class PostListView(ListView):
 
             return posts
         return Post.objects.none()
-    # test
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
