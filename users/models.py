@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from posts.models import Post
 
 # Create your models here.
 
@@ -10,6 +11,8 @@ class Profile(models.Model):
     bio = models.TextField(blank=True)
     profile_picture = models.ImageField(
         upload_to='profile_pictures/', null=True)
+    saved_posts = models.ManyToManyField(
+        Post, blank=True, related_name='saved_by')
 
     def __str__(self):
         return self.user.username

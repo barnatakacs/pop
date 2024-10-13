@@ -7,7 +7,7 @@
 {% block content %}
     {% if posts %}
     {% for post in posts %}
-        {% include "core/post.html" with post=post redirection='index' %}
+        {% include "core/post.html" with post=post redirection='index' saved_posts=saved_posts%}
     {% endfor %}
     {% else %}
     <div class="px-6 py-4 shadow-lg rounded-lg bg-white">

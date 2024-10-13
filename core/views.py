@@ -55,6 +55,8 @@ class PostListView(ListView):
             context['comment_form'] = CommentForm()
             context['comments'] = Comment.objects.select_related(
                 'author').filter(post__in=context['posts'])
+            profile = self.request.user.user_profile
+            context["saved_posts"] = profile.saved_posts.all()
         return context
 
     def get_template_names(self):

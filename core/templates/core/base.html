@@ -24,6 +24,8 @@
             <ul>
                 <li class="px-2 bg-gray-200 rounded-full text-md font-normal text-gray-500 {% if request.path == '/' %}active {% else %} hidden {% endif %}">HOME</li>
                 <li class="px-2 bg-gray-200 rounded-full text-md font-normal text-gray-500 {% if request.path == '/posts/explore/' %}active {% else %} hidden {% endif %}">EXPLORE</li>
+                <li class="px-2 bg-gray-200 rounded-full text-md font-normal text-gray-500 {% if request.path == '/posts/saved/' %}active {% else %} hidden {% endif %}">SAVED</li>
+                <li class="px-2 bg-gray-200 rounded-full text-md font-normal text-gray-500 {% if request.path == '/posts/new/' %}active {% else %} hidden {% endif %}">NEW</li>
             </ul>
         </div>
 
@@ -64,7 +66,7 @@
             <a href="{% url "core:index" %}" class="hover:text-yellow-400 active:text-yellow-400 block">
                 <div class="flex items-center space-x-3">
                     <img class="h-5" src="{% static "home2.png" %}">
-                    <h2 class="text-xl">Feed</h1>
+                    <h2 class="text-xl">Home</h1>
                 </div>
             </a>
             <a href="{% url "posts:explore" %}" class="hover:text-yellow-400 active:text-yellow-400 block">
@@ -73,7 +75,7 @@
                     <h2 class="text-xl">Explore</h1>
                 </div>
             </a>
-            <a href="#" class="hover:text-yellow-400 active:text-yellow-400 block">
+            <a href="{% url "posts:saved" %}" class="hover:text-yellow-400 active:text-yellow-400 block">
                 <div class="flex items-center space-x-3">
                     <img class="h-5" src="{% static "save.png" %}">
                     <h2 class="text-xl">Saved</h1>

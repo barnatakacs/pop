@@ -10,6 +10,7 @@ from .forms import CommentForm
 from django.views.generic.edit import DeleteView
 from django.http import HttpResponseRedirect
 from django.db.models import Count
+from django.contrib.auth.decorators import login_required
 
 # Create your views here.
 
@@ -41,6 +42,7 @@ class NewPostView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
 
+@login_required
 def like(request, pk, redirection):
     post_to_like = get_object_or_404(Post, pk=pk)
 
@@ -54,6 +56,8 @@ def like(request, pk, redirection):
 
     if redirection == 'detail':
         return redirect('posts:detail', pk=pk)
+    elif redirection == 'profile':
+        return redirect('users:profile', username=request.user.username)
     else:
         return redirect('core:index')
 
@@ -109,6 +113,11 @@ class ExplorePageView(LoginRequiredMixin, ListView):
 
         return filtered_posts
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = 'Explore'
+        return context
+
 
 class PostDetailView(DetailView):
     model = Post
@@ -123,6 +132,8 @@ class PostDetailView(DetailView):
         context['comment_form'] = CommentForm()
         context['comments'] = Comment.objects.select_related(
             'author').filter(post=post)
+        profile = self.request.user.user_profile
+        context["saved_posts"] = profile.saved_posts.all()
 
         if self.request.user.is_authenticated:
             context['user_liked'] = Like.objects.filter(
@@ -141,3 +152,37 @@ class PostDetailView(DetailView):
             new_comment.save()
 
         return redirect(reverse('posts:detail', kwargs={'pk': post.id}))
+
+
+class SavedPageView(LoginRequiredMixin, ListView):
+    model = Post
+    template_name = 'posts/explore.html'
+    context_object_name = 'posts'
+
+    def get_queryset(self):
+        profile = self.request.user.user_profile
+        saved_posts = profile.saved_posts.all()
+        return saved_posts
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["title"] = 'Saved'
+        return context
+
+
+@login_required
+def save(request, pk, redirection):
+    post_to_save = get_object_or_404(Post, pk=pk)
+    profile = request.user.user_profile
+
+    if post_to_save in profile.saved_posts.all():
+        profile.saved_posts.remove(post_to_save)
+    else:
+        profile.saved_posts.add(post_to_save)
+
+    if redirection == 'detail':
+        return redirect('posts:detail', pk=pk)
+    elif redirection == 'profile':
+        return redirect('users:profile', username=request.user.username)
+    else:
+        return redirect('core:index')

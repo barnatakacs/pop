@@ -4,6 +4,6 @@
 
 {% block content %}
 <div>
-    {% include "core/post.html" with post=post redirection='detail' %}
+    {% include "core/post.html" with post=post redirection='detail' saved_posts=saved_posts %}
 </div>
 {% endblock content %}

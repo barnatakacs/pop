@@ -54,7 +54,7 @@
 
     {% if posts %}
     {% for post in posts %}
-        {% include "core/post.html" with post=post %}
+        {% include "core/post.html" with post=post redirection='profile' saved_posts=saved_posts %}
     {% endfor %}
     {% else %}
         <div class="px-6 py-6 mb-6 rounded-lg shadow-lg bg-white">

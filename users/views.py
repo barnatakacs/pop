@@ -2,12 +2,13 @@ from django.db.models.query import QuerySet
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.models import User
 from .models import Profile, Follow
-from posts.models import Post
+from posts.models import Post, Like
 from .forms import EditProfileForm
 from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView, DetailView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
+from django.db.models import OuterRef, Exists
 
 # Create your views here.
 
@@ -37,11 +38,22 @@ class ProfilePageView(LoginRequiredMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user = self.object.user
-        context['posts'] = Post.objects.filter(
+        posts = Post.objects.filter(
             author=user).order_by('-created_at')
+
+        user_liked = Like.objects.filter(
+            user=self.request.user, post=OuterRef('pk'))
+        posts = posts.annotate(user_liked=Exists(user_liked))
+
+        context['posts'] = posts
+
         context['is_following'] = Follow.objects.filter(
             follower=self.request.user, following=user
         ).exists()
+
+        profile = self.request.user.user_profile
+        context["saved_posts"] = profile.saved_posts.all()
+
         return context
 
 
