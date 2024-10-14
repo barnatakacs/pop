@@ -11,5 +11,6 @@ urlpatterns = [
     path('explore/', views.ExplorePageView.as_view(), name='explore'),
     path('detail/<int:pk>/', views.PostDetailView.as_view(), name='detail'),
     path('saved/', views.SavedPageView.as_view(), name='saved'),
-    path('save/<int:pk>/<str:redirection>/', views.save, name='save')
+    path('save/<int:pk>/<str:redirection>/', views.save, name='save'),
+    path('delete/<int:pk>/', views.DeletePostView.as_view(), name='delete_post')
 ]

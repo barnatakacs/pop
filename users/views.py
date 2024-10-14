@@ -2,13 +2,15 @@ from django.db.models.query import QuerySet
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.models import User
 from .models import Profile, Follow
-from posts.models import Post, Like
+from posts.models import Post, Like, Comment
+from posts.forms import CommentForm
 from .forms import EditProfileForm
 from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView, DetailView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.db.models import OuterRef, Exists
+from django.http import HttpResponseRedirect
 
 # Create your views here.
 
@@ -54,7 +56,29 @@ class ProfilePageView(LoginRequiredMixin, DetailView):
         profile = self.request.user.user_profile
         context["saved_posts"] = profile.saved_posts.all()
 
+        if self.request.user.is_authenticated:
+            context['comment_form'] = CommentForm()
+            context['comments'] = Comment.objects.select_related(
+                'author').filter(post__in=context['posts'])
+            profile = self.request.user.user_profile
+
         return context
+
+    def post(self, request, *args, **kwargs):
+        if request.method == 'POST' and request.user.is_authenticated:
+
+            comment_form = CommentForm(request.POST)
+
+            if comment_form.is_valid():
+                new_comment = comment_form.save(commit=False)
+                new_comment.author = request.user
+                post_id = request.POST.get('post_id')
+                new_comment.post = Post.objects.get(id=post_id)
+                new_comment.save()
+
+                return redirect('users:profile', username=self.get_object().user.username)
+
+            return self.get(request, *args, **kwargs)
 
 
 # @login_required

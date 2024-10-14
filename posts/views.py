@@ -79,6 +79,9 @@ class DeleteCommentView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
         if redirection == 'detail':
             return redirect('posts:detail', pk=post_pk)
+        elif redirection == 'profile':
+            post = get_object_or_404(Post, pk=post_pk)
+            return redirect('users:profile', username=post.author.username)
         else:
             return redirect(self.get_success_url())
 
@@ -183,6 +186,14 @@ def save(request, pk, redirection):
     if redirection == 'detail':
         return redirect('posts:detail', pk=pk)
     elif redirection == 'profile':
-        return redirect('users:profile', username=request.user.username)
+        return redirect('users:profile', username=post_to_save.author.username)
     else:
         return redirect('core:index')
+
+
+class DeletePostView(LoginRequiredMixin, DeleteView):
+    model = Post
+
+    def get_success_url(self):
+        username = self.object.author.username
+        return reverse('users:profile', kwargs={'username': username})
