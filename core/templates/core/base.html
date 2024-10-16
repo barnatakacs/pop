@@ -52,48 +52,48 @@
                 </a>
             </div>
             <a href="{% url "core:logout" %}" class="px-4 py-1 bg-yellow-400 rounded-full hover:bg-yellow-500">
-                <h2 class="font-semibold text-lg text-white">Logout</h2>
+                <h2 class="font-medium text-lg text-white">Logout</h2>
             </a>
         </div>
         {% else %}
             <a href="{% url "core:signup" %}" class="px-3 py-1 hover:text-yellow-400">
-                <h2 class="font-semibold text-lg">Sign Up</h2>
+                <h2 class="font-medium text-lg">Sign Up</h2>
             </a>
             <a href="{% url "core:login" %}" class="px-4 py-1 bg-yellow-400 rounded-full hover:bg-yellow-500">
-                <h2 class="font-semibold text-lg text-white">Login</h2>
+                <h2 class="font-medium text-lg text-white">Login</h2>
             </a>
         {% endif %}
         </div>
     </nav>
 
         {% if request.user.is_authenticated %}
-        <div class="w-52 shadow-lg rounded-lg px-3 py-3 space-y-4 h-fit bg-white fixed top-20 left-52">
-            <a href="{% url "core:index" %}" class="hover:text-yellow-400 active:text-yellow-400 block">
+        <div class="w-52 shadow-lg rounded-lg px-3 py-3 space-y-3 h-fit bg-white fixed top-20 left-52">
+            <a href="{% url "core:index" %}" class="p-2 rounded-lg hover:bg-gray-200 block">
                 <div class="flex items-center space-x-3">
                     <img class="h-5" src="{% static "home2.png" %}">
                     <h2 class="text-xl">Home</h1>
                 </div>
             </a>
-            <a href="{% url "posts:explore" %}" class="hover:text-yellow-400 active:text-yellow-400 block">
+            <a href="{% url "posts:explore" %}" class="p-2 rounded-lg hover:bg-gray-200 block">
                 <div class="flex items-center space-x-3">
                     <img class="h-5" src="{% static "search2.png" %}">
                     <h2 class="text-xl">Explore</h1>
                 </div>
             </a>
-            <a href="{% url "posts:saved" %}" class="hover:text-yellow-400 active:text-yellow-400 block">
+            <a href="{% url "posts:saved" %}" class="p-2 rounded-lg hover:bg-gray-200 block">
                 <div class="flex items-center space-x-3">
                     <img class="h-5" src="{% static "save.png" %}">
                     <h2 class="text-xl">Saved</h1>
                 </div>
             </a>
-            <a href="#" class="hover:text-yellow-400 active:text-yellow-400 block">
+            <a href="#" class="p-2 rounded-lg hover:bg-gray-200 block">
                 <div class="flex items-center space-x-3">
                     <img class="h-5" src="{% static "comment2.png" %}">
                     <h2 class="text-xl">Chats</h1>
                 </div>
             </a>
-            <a href="{% url "posts:new" %}" class="rounded-lg shadow-lg bg-yellow-400 text-white hover:bg-yellow-500 text-center block">
-                    <p class="font-semibold text-lg">New Post</p>
+            <a href="{% url "posts:new" %}" class="p-2 rounded-lg shadow-lg bg-yellow-400 text-white hover:bg-yellow-500 text-center block">
+                    <p class="font-medium text-xl">New Post</p>
             </a>
         </div>
         {% endif %}
