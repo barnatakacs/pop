@@ -14,16 +14,16 @@
     </div>
     <ul class="list-none mt-4">
         {% for user in users %}
-        <li class="flex items-center py-2 border-b mb-2">
-            {% if user.user_profile.profile_picture %}
-                <img src="{{ user.user_profile.profile_picture.url }}" class="w-10 h-10 rounded-full">
-            {% else %}
-                <img src="{% static "user2.png" %}" class="w-10 h-10 rounded-full">
-            {% endif %}
-            <div class="ml-4">
-                <a href="{% url 'users:profile' user.username %}" class="text-lg">{{ user.username }}</a>
-            </div>
-        </li>
+        <a href="{% url 'users:profile' user.username %}">
+            <li class="flex items-center px-2 py-2 border-2 mb-2 rounded-lg hover:bg-gray-200">
+                {% if user.user_profile.profile_picture %}
+                    <img src="{{ user.user_profile.profile_picture.url }}" class="border-2 border-gray-300 w-10 h-10 rounded-full">
+                {% else %}
+                    <img src="{% static "user2.png" %}" class="border-2 border-gray-300 w-10 h-10 rounded-full">
+                {% endif %}
+                <p class="ml-2">{{ user.username }}</p>
+            </li>
+        </a>
         {% empty %}
         <li>No {{ stat }} found.</li>
         {% endfor %}

@@ -25,7 +25,7 @@ class CommentForm(forms.ModelForm):
 
     content = forms.CharField(widget=forms.Textarea(attrs={
         'placeholder': 'Add a comment...',
-        'class': 'w-full h-11 border rounded-l-xl p-2',
+        'class': 'p-2 w-full h-11 rounded-lg border-2 border-gray-200',
         'rows': 1,
         'style': 'resize: none;'
     }))

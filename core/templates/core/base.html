@@ -5,8 +5,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.tailwindcss.com"></script>
     <title>{% block title %}{% endblock title %} | POP</title>
+    {% comment %} <script src="https://cdn.tailwindcss.com"></script> {% endcomment %}
+    <link rel="stylesheet" href="{% static "css/styles.css" %}">
     <link rel="stylesheet" href="{% static 'core/css/font.css' %}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -34,18 +35,22 @@
         <div class="flex space-x-3">
         {% if request.user.is_authenticated %}
         <div class="flex items-center">
-            <a href="{% url "users:profile" user.username %}" class="mr-3 flex items-center px-0 py-0">
-                <p class="text-lg mr-3 hover:text-yellow-400">{{ user.username }}</p>
-                {% if user.user_profile and user.user_profile.profile_picture %}
-                    <div class="w-10 h-10 rounded-full overflow-hidden border-2 border-gray-300">
-                        <img class="w-full h-full object-cover object-center aspect-square" src="{{ user.user_profile.profile_picture.url }}">
+            <div class="flex items-center mr-3 border-2 border-gray-400 rounded-full hover:bg-gray-200">
+                <a href="{% url "users:profile" user.username %}" class="flex items-center">
+                    <div class="ml-2">
+                        <p class="text-lg mr-2">{{ user.username }}</p>
                     </div>
-                {% else %}
-                    <div class="w-10 h-10 rounded-full overflow-hidden border-2 border-gray-300">
-                        <img class="w-full h-full object-cover object-center aspect-square" src="{% static "user2.png" %}">
-                    </div>
-                {% endif %}
-            </a>
+                    {% if user.user_profile and user.user_profile.profile_picture %}
+                        <div class="w-9 h-9 rounded-full overflow-hidden border-2 border-gray-300">
+                            <img class="w-full h-full object-cover object-center aspect-square" src="{{ user.user_profile.profile_picture.url }}">
+                        </div>
+                    {% else %}
+                        <div class="w-9 h-9 rounded-full overflow-hidden border-2 border-gray-300">
+                            <img class="w-full h-full object-cover object-center aspect-square" src="{% static "user2.png" %}">
+                        </div>
+                    {% endif %}
+                </a>
+            </div>
             <a href="{% url "core:logout" %}" class="px-4 py-1 bg-yellow-400 rounded-full hover:bg-yellow-500">
                 <h2 class="font-semibold text-lg text-white">Logout</h2>
             </a>
