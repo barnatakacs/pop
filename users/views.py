@@ -1,33 +1,14 @@
-from django.db.models.query import QuerySet
 from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.models import User
-from .models import Profile, Follow
-from posts.models import Post, Like, Comment
-from posts.forms import CommentForm
-from .forms import EditProfileForm
+from django.urls import reverse_lazy, reverse
 from django.contrib.auth.decorators import login_required
 from django.views.generic import ListView, DetailView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.urls import reverse_lazy, reverse
+from django.contrib.auth.models import User
 from django.db.models import OuterRef, Exists
-from django.http import HttpResponseRedirect
-
-# Create your views here.
-
-
-# @login_required
-# def profile_page(request, username):
-#     user = get_object_or_404(User, username=username)
-#     profile = get_object_or_404(Profile, user=user)
-#     is_following = Follow.objects.filter(
-#         follower=request.user, following=profile.user).exists()
-#     posts = Post.objects.all().filter(author=profile.user)
-
-#     return render(request, 'users/profile.html', {
-#         'profile': profile,
-#         'is_following': is_following,
-#         'posts': posts
-#     })
+from .models import Profile, Follow
+from .forms import EditProfileForm
+from posts.models import Post, Like, Comment
+from posts.forms import CommentForm
 
 
 class ProfilePageView(LoginRequiredMixin, DetailView):
@@ -81,24 +62,6 @@ class ProfilePageView(LoginRequiredMixin, DetailView):
             return self.get(request, *args, **kwargs)
 
 
-# @login_required
-# def edit_profile(request):
-#     profile = get_object_or_404(Profile, user=request.user)
-#     if request.method == 'POST':
-#         form = EditProfileForm(request.POST, request.FILES, instance=profile)
-#         if form.is_valid():
-#             form.save()
-
-#         return redirect('users:profile', username=profile.user.username)
-#     else:
-#         form = EditProfileForm()
-
-#     return render(request, 'users/edit_profile.html', {
-#         'form': form,
-#         'profile': profile
-#     })
-
-
 class EditProfileView(LoginRequiredMixin, UpdateView):
     model = Profile
     form_class = EditProfileForm
@@ -133,28 +96,6 @@ def follow(request, username):
         follow_instance.delete()
 
     return redirect('users:profile', username=username)
-
-
-# def follow_stat(request, username, stat):
-#     user = get_object_or_404(User, username=username)
-#     profile = get_object_or_404(Profile, user=user)
-
-#     if stat == 'followers':
-#         users_list = Follow.objects.filter(
-#             following=user).select_related('follower')
-#         users = [follow.follower for follow in users_list]
-#     elif stat == 'following':
-#         users_list = Follow.objects.filter(
-#             follower=user).select_related('following')
-#         users = [follow.following for follow in users_list]
-#     else:
-#         return render(request, '404.html', status=404)
-
-#     return render(request, 'users/follow_stat.html', {
-#         'profile': profile,
-#         'users': users,
-#         'stat': stat
-#     })
 
 
 class FollowStatView(ListView):

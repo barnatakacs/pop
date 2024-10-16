@@ -1,32 +1,15 @@
-from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
-from posts.models import Post, Like, Comment
-from posts.forms import CommentForm
-from users.models import Profile, Follow
-from .forms import SignUpForm, LoginForm
 from django.contrib.auth import login, logout
-from django.contrib.auth.views import LoginView
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth.decorators import login_required
-from django.views.generic import ListView
-from django.views.generic import FormView
+from django.http import HttpResponseRedirect
+from django.contrib.auth.views import LoginView
+from django.views.generic import ListView, FormView
 from django.db.models import Subquery, OuterRef, Exists
-
-
-# Create your views here.
-
-
-# def index(request):
-#     if request.user.is_authenticated:
-#         following = Follow.objects.filter(
-#             follower=request.user).values('following')
-#         posts = Post.objects.filter(author__in=Subquery(
-#             following)).order_by('-created_at')
-#         return render(request, 'core/index.html', {
-#             "posts": posts
-#         })
-#     else:
-#         return render(request, 'core/welcome.html')
+from posts.models import Post, Like, Comment
+from users.models import Profile, Follow
+from posts.forms import CommentForm
+from .forms import SignUpForm, LoginForm
 
 
 class PostListView(ListView):
@@ -77,24 +60,6 @@ class PostListView(ListView):
                 return HttpResponseRedirect(reverse('core:index'))
 
             return self.get(request, *args, **kwargs)
-
-
-# def signup(request):
-#     if request.method == 'POST':
-#         form = SignUpForm(request.POST)
-#         if form.is_valid():
-#             user = form.save(commit=False)
-#             user.username = user.username.lower()
-#             user.save()
-#             Profile.objects.create(user=user)
-#             login(request, user)
-#             return redirect('core:index')
-#     else:
-#         form = SignUpForm()
-
-#     return render(request, 'core/signup.html', {
-#         'form': form
-#     })
 
 
 class SignUpView(FormView):

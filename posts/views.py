@@ -1,34 +1,14 @@
-from django.views.generic import ListView, DetailView
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy, reverse
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.views import View
-from django.views.generic import CreateView
-from .forms import NewPostForm
-from .models import Post, Like, Comment
-from .forms import CommentForm
-from django.views.generic.edit import DeleteView
-from django.http import HttpResponseRedirect
-from django.db.models import Count
 from django.contrib.auth.decorators import login_required
-
-# Create your views here.
-
-
-# def new(request):
-#     if request.method == 'POST':
-#         form = NewPostForm(request.POST, request.FILES)
-#         if form.is_valid():
-#             post = form.save(commit=False)
-#             post.author = request.user
-#             post.save()
-#             return redirect('core:index')
-#     else:
-#         form = NewPostForm()
-
-#     return render(request, 'posts/new.html', {
-#         'form': form
-#     })
+from django.views.generic import ListView, DetailView
+from django.views.generic import CreateView
+from django.views.generic.edit import DeleteView
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.db.models import Count
+from .forms import NewPostForm
+from .forms import CommentForm
+from .models import Post, Like, Comment
 
 
 class NewPostView(LoginRequiredMixin, CreateView):
