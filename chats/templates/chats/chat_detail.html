@@ -22,22 +22,73 @@
         {% endif %}
     {% endfor %}
 
-    <div class="chat-messages messages p-2 rounded-lg h-fit">
+    <div id="chat-messages" class="chat-messages messages p-2 rounded-lg h-fit">
         {% for message in messages %}
-            <div class="message mb-2">
-                <strong>{{ message.sender.username }}:</strong>
-                <p>{{ message.content }}</p>
-                <span class="text-gray-500 text-sm">{{ message.created_at }}</span>
+        {% if message.user == request.user %}
+        <div class="mb-3 flex items-end">
+            <div class="inline-flex flex-col w-auto">
+        <span class="text-gray-500 text-xs">{{ message.created_at|date:"F d, Y, h:i A" }}</span>
+            <div class="flex border-2 border-gray-200 p-2 rounded-lg">
+                <p class="mr-2 mt-2">{{ message.content }}</p>
+                {% if user.user_profile and user.user_profile.profile_picture %}
+                    <img class="border-2 w-10 h-10 rounded-full object-cover object-center aspect-square" src="{{ user.user_profile.profile_picture.url }}">
+                {% else %}
+                    <img class="border-2 w-10 h-10 rounded-full" src="{% static 'user2.png' %}">
+                {% endif %}
             </div>
+        </div>
+        </div>
+        {% else %}
+        <div class="mb-3 flex justify-end">
+            <div class="inline-flex flex-col w-auto">
+        <span class="text-gray-500 text-xs">{{ message.created_at|date:"F d, Y, h:i A" }}</span>
+            <div class="flex bg-gray-100 p-2 rounded-lg">
+                {% if message.user.user_profile and message.user.user_profile.profile_picture %}
+                    <img class="border-2 w-10 h-10 rounded-full object-cover object-center aspect-square" src="{{ message.user.user_profile.profile_picture.url }}">
+                {% else %}
+                    <img class="border-2 w-10 h-10 rounded-full" src="{% static 'user2.png' %}">
+                {% endif %}
+                <p class="ml-2 mt-2">{{ message.content }}</p>
+            </div>
+        </div>
+    </div>
+        {% endif %}
         {% empty %}
             <p class="p-2 bg-gray-100 rounded-lg">No messages yet.</p>
         {% endfor %}
     </div>
 
-    <form method="post" action="" class="flex items-center space-x-2">
+    <form id="message-form" method="post" action="." class="flex items-center space-x-2 mt-2">
         {% csrf_token %}
-        <input name="content" class="w-full rounded-lg p-2 focus:outline-none" placeholder="Type your message here..."></input>
-        <button type="submit" class="bg-yellow-400 text-white rounded-lg px-4 py-2">Send</button>
+        <input name="content" id="message-input" class="w-full rounded-lg p-2 focus:outline-none" placeholder="Type your message here..." required></input>
+        <button type="submit" class="bg-yellow-400 text-white rounded-lg px-4 py-2 hover:bg-yellow-500">Send</button>
     </form>
 </div>
+
+<script>
+    const chatId = "{{ chat.id }}";
+    const chatSocket = new WebSocket(`ws://${window.location.host}/ws/chat/${chatId}/`);
+
+    chatSocket.onmessage = function(e) {
+        const data = JSON.parse(e.data);
+        const messageElement = document.createElement('div');
+        messageElement.className = 'message mb-2';
+        messageElement.innerHTML = `<strong>${data.user.username}:</strong> <p>${data.content}</p><span class="text-gray-500 text-sm">${data.created_at}</span>`;
+        document.getElementById('chat-messages').appendChild(messageElement);
+    };
+
+    chatSocket.onclose = function(e) {
+        console.error('Chat socket closed unexpectedly');
+    };
+
+    document.getElementById('message-form').onsubmit = function(e) {
+        e.preventDefault();
+        const messageInputDom = document.getElementById('message-input');
+        const message = messageInputDom.value;
+        chatSocket.send(JSON.stringify({
+            'content': message
+        }));
+        messageInputDom.value = '';
+    };
+</script>
 {% endblock content %}
