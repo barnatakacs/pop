@@ -12,6 +12,12 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+    <style>
+        .chat-messages {
+            height: 400px;
+            overflow-y: auto
+        }
+    </style>
 </head>
 <body class="bg-gray-100">
     <nav class="py-6 px-52 flex justify-between items-center h-14 shadow-lg z-10 z-40 fixed top-0 w-full bg-white">
@@ -26,6 +32,7 @@
                 <li class="px-2 bg-gray-200 rounded-full text-md font-normal text-gray-500 {% if request.path == '/' %}active {% else %} hidden {% endif %}">HOME</li>
                 <li class="px-2 bg-gray-200 rounded-full text-md font-normal text-gray-500 {% if request.path == '/posts/explore/' %}active {% else %} hidden {% endif %}">EXPLORE</li>
                 <li class="px-2 bg-gray-200 rounded-full text-md font-normal text-gray-500 {% if request.path == '/posts/saved/' %}active {% else %} hidden {% endif %}">SAVED</li>
+                <li class="px-2 bg-gray-200 rounded-full text-md font-normal text-gray-500 {% if request.path == '/chats/' %}active {% else %} hidden {% endif %}">CHATS</li>
                 <li class="px-2 bg-gray-200 rounded-full text-md font-normal text-gray-500 {% if request.path == '/posts/new/' %}active {% else %} hidden {% endif %}">NEW</li>
             </ul>
         </div>
@@ -86,7 +93,7 @@
                     <h2 class="text-xl">Saved</h1>
                 </div>
             </a>
-            <a href="#" class="p-2 rounded-lg hover:bg-gray-200 block">
+            <a href="{% url "chats:chats" %}" class="p-2 rounded-lg hover:bg-gray-200 block">
                 <div class="flex items-center space-x-3">
                     <img class="h-5" src="{% static "comment2.png" %}">
                     <h2 class="text-xl">Chats</h1>

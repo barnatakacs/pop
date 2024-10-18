@@ -33,6 +33,8 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
+    'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -42,7 +44,8 @@ INSTALLED_APPS = [
     'core',
     'users',
     'posts',
-    'comments'
+    'comments',
+    'chats'
 ]
 
 MIDDLEWARE = [
@@ -74,7 +77,13 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'pop.wsgi.application'
+ASGI_APPLICATION = 'pop.asgi.application'
 
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels.layers.InMemoryChannelLayer',
+    },
+}
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases

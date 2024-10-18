@@ -1,0 +1,43 @@
+{% extends "core/base.html" %}
+
+{% load static %}
+
+{% block title %}Chat Detail{% endblock title %}
+
+{% block content %}
+<div class="p-3 bg-white rounded-lg shadow-lg h-max-2/3 space-y-4">
+    {% for user in chat.users.all %}
+        {% if user != request.user %}
+            <a href="{% url "users:profile" user.username %}" class="flex items-center space-x-4 p-3">
+                {% if user.user_profile and user.user_profile.profile_picture %}
+                    <img class="border-2 w-10 h-10 rounded-full object-cover object-center aspect-square" src="{{ user.user_profile.profile_picture.url }}">
+                {% else %}
+                    <img class="border-2 w-10 h-10 rounded-full" src="{% static 'user2.png' %}">
+                {% endif %}
+                <div>
+                    <p class="text-lg font-semibold">{{ user.username }}</p>
+                    <p class="text-xs text-gray-500">{{ chat.modified_at }}</p>
+                </div>
+            </a>
+        {% endif %}
+    {% endfor %}
+
+    <div class="chat-messages messages p-2 rounded-lg h-fit">
+        {% for message in messages %}
+            <div class="message mb-2">
+                <strong>{{ message.sender.username }}:</strong>
+                <p>{{ message.content }}</p>
+                <span class="text-gray-500 text-sm">{{ message.created_at }}</span>
+            </div>
+        {% empty %}
+            <p class="p-2 bg-gray-100 rounded-lg">No messages yet.</p>
+        {% endfor %}
+    </div>
+
+    <form method="post" action="" class="flex items-center space-x-2">
+        {% csrf_token %}
+        <input name="content" class="w-full rounded-lg p-2 focus:outline-none" placeholder="Type your message here..."></input>
+        <button type="submit" class="bg-yellow-400 text-white rounded-lg px-4 py-2">Send</button>
+    </form>
+</div>
+{% endblock content %}

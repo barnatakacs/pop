@@ -16,7 +16,6 @@ class Post(models.Model):
 
 
 class Like(models.Model):
-    # could have been Profile
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     post = models.ForeignKey(
         Post, on_delete=models.CASCADE, related_name='likes')
@@ -31,7 +30,6 @@ class Like(models.Model):
 
 class Comment(models.Model):
     author = models.ForeignKey(
-        # could have been Profile
         User, on_delete=models.CASCADE, related_name='comment_author')
     post = models.ForeignKey(
         Post, on_delete=models.CASCADE, related_name='comment')

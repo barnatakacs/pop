@@ -1,0 +1,33 @@
+{% extends "core/base.html" %}
+
+{% load static %}
+
+{% block title %}Chats{% endblock title %}
+
+{% block content %}
+{% if chats %}
+{% for chat in chats %}
+<div class="bg-white rounded-lg shadow-lg mb-3 hover:bg-gray-200">
+    <a href="{% url "chats:chat_detail" chat.id %}" class="flex items-center space-x-4 p-3">
+        {% for user in chat.users.all %}
+            {% if user != request.user %}
+                {% if user.user_profile and user.user_profile.profile_picture %}
+                    <img class="border-2 w-10 h-10 rounded-full object-cover object-center aspect-square" src="{{ user.user_profile.profile_picture.url }}">
+                {% else %}
+                    <img class="border-2 w-10 h-10 rounded-full" src="{% static 'user2.png' %}">
+                {% endif %}
+                <div>
+                    <p class="text-lg font-semibold">{{ user.username }}</p>
+                    <p class="text-xs text-gray-500">{{ chat.modified_at }}</p>
+                </div>
+            {% endif %}
+        {% endfor %}
+    </a>
+</div>
+{% endfor %}
+    {% else %}
+        <div class="bg-white rounded-lg shadow-lg p-3">
+            <h1 class="p-3 text-center text-lg">You have no chats yet.</h1>
+        </div>
+    {% endif %}
+{% endblock content %}

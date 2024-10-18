@@ -36,6 +36,13 @@
                         </button>
                     {% endif %}
                 </form>
+                <form action="{% url 'chats:create_chat' profile.user.id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="flex items-center space-x-2 px-4 py-1 rounded-full bg-yellow-400 hover:bg-yellow-500">
+                        <p class="text-white font-medium">Message</p>
+                        <img class="h-4" src="{% static "chat3white.png" %}">
+                    </button>
+                </form>
                 {% else %}
                 <a href="{% url "users:edit" %}" class="px-4 py-1 bg-yellow-400 rounded-full bg-yellow-400 hover:bg-yellow-500">
                     <p class="text-white font-medium">Edit Profile</p>
