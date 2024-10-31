@@ -25,23 +25,20 @@
     <div id="chat-messages" class="chat-messages messages p-2 rounded-lg h-fit">
         {% for message in messages %}
         {% if message.user == request.user %}
-        <div class="mb-3 flex items-end">
-            <div class="inline-flex flex-col w-auto">
-        <span class="text-gray-500 text-xs">{{ message.created_at|date:"F d, Y, h:i A" }}</span>
+        <div class="mb-3">
+            <span class="text-gray-500 text-xs">{{ message.created_at|date:"F d, Y, h:i A" }}</span>
             <div class="flex border-2 border-gray-200 p-2 rounded-lg">
-                <p class="mr-2 mt-2">{{ message.content }}</p>
-                {% if user.user_profile and user.user_profile.profile_picture %}
-                    <img class="border-2 w-10 h-10 rounded-full object-cover object-center aspect-square" src="{{ user.user_profile.profile_picture.url }}">
+                {% if message.user.user_profile and message.user.user_profile.profile_picture %}
+                <img class="border-2 w-10 h-10 rounded-full object-cover object-center aspect-square" src="{{ user.user_profile.profile_picture.url }}">
                 {% else %}
-                    <img class="border-2 w-10 h-10 rounded-full" src="{% static 'user2.png' %}">
+                <img class="border-2 w-10 h-10 rounded-full" src="{% static 'user2.png' %}">
                 {% endif %}
+                <p class="ml-2 mt-2">{{ message.content }}</p>
             </div>
         </div>
-        </div>
         {% else %}
-        <div class="mb-3 flex justify-end">
-            <div class="inline-flex flex-col w-auto">
-        <span class="text-gray-500 text-xs">{{ message.created_at|date:"F d, Y, h:i A" }}</span>
+        <div class="mb-3">
+            <span class="text-gray-500 text-xs">{{ message.created_at|date:"F d, Y, h:i A" }}</span>
             <div class="flex bg-gray-100 p-2 rounded-lg">
                 {% if message.user.user_profile and message.user.user_profile.profile_picture %}
                     <img class="border-2 w-10 h-10 rounded-full object-cover object-center aspect-square" src="{{ message.user.user_profile.profile_picture.url }}">
@@ -51,10 +48,9 @@
                 <p class="ml-2 mt-2">{{ message.content }}</p>
             </div>
         </div>
-    </div>
         {% endif %}
         {% empty %}
-            <p class="p-2 bg-gray-100 rounded-lg">No messages yet.</p>
+            <p id="no-message" class="p-2 bg-gray-100 rounded-lg">No messages yet.</p>
         {% endfor %}
     </div>
 
@@ -68,14 +64,40 @@
 <script>
     const chatId = "{{ chat.id }}";
     const chatSocket = new WebSocket(`ws://${window.location.host}/ws/chat/${chatId}/`);
+    const currentUser = "{{ request.user.username }}";
 
     chatSocket.onmessage = function(e) {
         const data = JSON.parse(e.data);
         const messageElement = document.createElement('div');
-        messageElement.className = 'message mb-2';
-        messageElement.innerHTML = `<strong>${data.user.username}:</strong> <p>${data.content}</p><span class="text-gray-500 text-sm">${data.created_at}</span>`;
-        document.getElementById('chat-messages').appendChild(messageElement);
-    };
+        const noMessageP = document.getElementById('no-message')
+        const isCurrentUser = data.user.trim().toLowerCase() === currentUser.trim().toLowerCase();
+
+        messageElement.className = 'mb-3';
+
+        if (isCurrentUser) {
+            messageElement.innerHTML = `
+                <span class="text-gray-500 text-xs">${data.created_at}</span>
+                <div class="flex border-2 border-gray-200 p-2 rounded-lg">
+                    <img class="border-2 w-10 h-10 rounded-full object-cover object-center aspect-square" src="${data.profile_picture}">
+                    <p class="ml-2 mt-2">${data.content}</p>
+                </div>`;
+        } else {
+            messageElement.innerHTML = `
+                <span class="text-gray-500 text-xs">${data.created_at}</span>
+                <div class="flex bg-gray-100 p-2 rounded-lg">
+                    <img class="border-2 w-10 h-10 rounded-full object-cover object-center aspect-square" src="${data.profile_picture}">
+                    <p class="ml-2 mt-2">${data.content}</p>
+                </div>`;
+        }
+
+            if (noMessageP) {
+                noMessageP.remove();
+            }
+            
+            document.getElementById('chat-messages').appendChild(messageElement);
+
+            scrollToBottom();
+        };
 
     chatSocket.onclose = function(e) {
         console.error('Chat socket closed unexpectedly');
@@ -90,5 +112,12 @@
         }));
         messageInputDom.value = '';
     };
+
+    function scrollToBottom() {
+        let objDiv = document.getElementById("chat-messages");
+        objDiv.scrollTop = objDiv.scrollHeight;
+    }
+
+    scrollToBottom();
 </script>
 {% endblock content %}

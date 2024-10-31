@@ -17,6 +17,10 @@
             height: 400px;
             overflow-y: auto
         }
+
+        .content {
+            max-width: 600px;
+        }
     </style>
 </head>
 <body class="bg-gray-100">
@@ -48,7 +52,7 @@
                         <p class="text-lg mr-2">{{ user.username }}</p>
                     </div>
                     {% if user.user_profile and user.user_profile.profile_picture %}
-                        <div class="w-9 h-9 rounded-full overflow-hidden border-2 border-gray-200">
+                        <div class="w-9 h-9 rounded-full overflow-hidden border-2 border-gray-200 clip-half">
                             <img class="w-full h-full object-cover object-center aspect-square" src="{{ user.user_profile.profile_picture.url }}">
                         </div>
                     {% else %}
@@ -130,7 +134,7 @@
     
                 
     <div class="px-36 py-20 flex justify-center">
-        <div class="w-1/2">
+        <div class="content w-1/2">
             {% block content %}
             
             {% endblock content %}

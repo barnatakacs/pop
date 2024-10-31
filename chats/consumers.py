@@ -23,12 +23,18 @@ class ChatConsumer(AsyncWebsocketConsumer):
             self.channel_name
         )
 
+    def get_profile_picture_url(self, user):
+        if hasattr(user, 'user_profile') and user.user_profile.profile_picture:
+            return user.user_profile.profile_picture.url
+        return '/static/user2.png'
+
     async def receive(self, text_data):
         text_data_json = json.loads(text_data)
         message_content = text_data_json['content']
 
         user = self.scope['user']
         chat = self.chat_id
+        profile_picture = await sync_to_async(self.get_profile_picture_url)(user)
 
         await self.save_message(user, chat, message_content)
 
@@ -39,6 +45,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 'content': message_content,
                 'user': self.scope['user'].username,
                 'created_at': self.now(),
+                'profile_picture': profile_picture,
             }
         )
 
@@ -46,11 +53,13 @@ class ChatConsumer(AsyncWebsocketConsumer):
         message = event['content']
         user = event['user']
         created_at = event['created_at']
+        profile_picture = event['profile_picture']
 
         await self.send(text_data=json.dumps({
             'content': message,
             'user': user,
             'created_at': created_at,
+            'profile_picture': profile_picture
         }))
 
     def now(self):
