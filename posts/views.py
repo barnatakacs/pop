@@ -71,7 +71,7 @@ class DeleteCommentView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         return self.request.user == comment.author
 
 
-class ExplorePageView(LoginRequiredMixin, ListView):
+class ExplorePageView(ListView):
     model = Post
     template_name = 'posts/explore.html'
     context_object_name = 'posts'
@@ -112,11 +112,12 @@ class PostDetailView(DetailView):
 
         post = self.get_object()
 
-        context['comment_form'] = CommentForm()
-        context['comments'] = Comment.objects.select_related(
-            'author').filter(post=post)
-        profile = self.request.user.user_profile
-        context["saved_posts"] = profile.saved_posts.all()
+        if self.request.user.is_authenticated:
+            context['comment_form'] = CommentForm()
+            context['comments'] = Comment.objects.select_related(
+                'author').filter(post=post)
+            profile = self.request.user.user_profile
+            context["saved_posts"] = profile.saved_posts.all()
 
         if self.request.user.is_authenticated:
             context['user_liked'] = Like.objects.filter(
