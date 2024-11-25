@@ -37,7 +37,7 @@ def like(request, pk, redirection):
     if redirection == 'detail':
         return redirect('posts:detail', pk=pk)
     elif redirection == 'profile':
-        return redirect('users:profile', username=request.user.username)
+        return redirect('users:profile', username=post_to_like.author.username)
     else:
         return redirect('core:index')
 
